@@ -21,7 +21,10 @@ class Module:
         self.trainable_parameters.append(param)
         return param
 
-    def forward(self, X, y=None):
+    def __call__(self, *args, **kwargs):
+        return self.forward(*args, **kwargs)
+
+    def forward(self, X):
         ...
 
     def backward(self, downstream_gradient):

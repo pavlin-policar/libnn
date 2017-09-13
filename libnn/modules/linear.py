@@ -11,7 +11,7 @@ class Linear(Module):
         self.add_bias = add_bias
 
         self.W = self.trainable(0.01 * np.random.randn(in_features, out_features))
-        self.b = self.trainable(np.zeros((1, out_features)))
+        self.b = self.trainable(np.zeros(out_features))
 
         self.__X_cache = None
 
@@ -24,4 +24,4 @@ class Linear(Module):
     def backward(self, d_y):
         self.W.grad = self.__X_cache.T.dot(d_y)
         self.b.grad = np.sum(d_y, axis=0)
-        return self.W.dot(d_y)
+        return d_y.dot(self.W.T)
