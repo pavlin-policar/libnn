@@ -38,7 +38,7 @@ class TestLinear(unittest.TestCase):
         d_X = self.linear.backward(self.downstream_gradient)
 
         np.testing.assert_almost_equal(
-            numeric_gradient(self.linear.forward, self.matrix),
+            numeric_gradient(self.linear, self.matrix),
             d_X
         )
 

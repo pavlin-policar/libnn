@@ -2,7 +2,7 @@ import numpy as np
 
 
 def numeric_gradient(f, x, eps=1e-6):
-    x, grad = x.astype(np.float64), np.zeros_like(x)
+    x, grad = x.astype(np.float64), np.zeros_like(x, dtype=np.float64)
 
     for idx in np.ndindex(x.shape):
         initial_x = x[idx]
