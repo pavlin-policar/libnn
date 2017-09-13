@@ -1,8 +1,9 @@
+import matplotlib.pyplot as plt
 import numpy as np
 
 from libnn import datasets
-from libnn.modules import Softmax, Linear
-import matplotlib.pyplot as plt
+from libnn.modules.activations import Softmax
+from libnn.modules.linear import Linear
 
 
 def scatter(X, y=None, indices=(0, 1), show=True):
