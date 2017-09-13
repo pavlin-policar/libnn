@@ -1,6 +1,6 @@
 import numpy as np
 
-from libnn.modules import Module
+from libnn.modules.module import Module
 
 
 class Linear(Module):
