@@ -3,25 +3,30 @@ import numpy as np
 from libnn.modules.module import Module
 
 
-class Softmax(Module):
-    def __init__(self):
-        super().__init__()
-        self.__probabilities = None
+class Activation:
+    def __call__(self, *args, **kwargs):
+        return self.forward(*args, **kwargs)
 
     def forward(self, X):
+        ...
+
+    def backward(self, x):
+        ...
+
+
+class Softmax(Activation):
+    def forward(self, X):
         z = np.exp(X - np.max(X, axis=1, keepdims=True))
-        probabilities = z / np.sum(z, axis=1, keepdims=True)
+        return z / np.sum(z, axis=1, keepdims=True)
 
-        if self.training:
-            self.__probabilities = probabilities
+    def backward(self, X):
+        probs = self.forward(X)
+        return probs * (1 - probs)
 
-        return probabilities
+        probs = downstream_gradient
+        n_shape = probs.shape[1]
 
-    def backward(self, downstream_gradient):
-        num_samples = self.__probabilities.shape[0]
+        jacobian = probs[..., :, np.newaxis] * (np.eye(n_shape) - probs[..., np.newaxis, :])
 
-        grad = self.__probabilities.copy()
-        grad[range(num_samples), downstream_gradient] -= 1
-        grad /= num_samples
+        return jacobian
 
-        return grad
