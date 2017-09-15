@@ -21,7 +21,7 @@ class Linear(Module):
 
         return X.dot(self.W) + self.b
 
-    def backward(self, d_y):
-        self.W.grad = self.__X_cache.T.dot(d_y)
-        self.b.grad = np.sum(d_y, axis=0)
-        return d_y.dot(self.W.T)
+    def backward(self, downstream_gradient):
+        self.W.grad = self.__X_cache.T.dot(downstream_gradient)
+        self.b.grad = np.sum(downstream_gradient, axis=0)
+        return downstream_gradient.dot(self.W.T)
