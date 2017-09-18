@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from libnn.modules.linear import Linear
+from libnn.modules.layers import Linear
 from tests.modules.utils import numeric_gradient
 
 

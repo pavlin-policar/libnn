@@ -4,11 +4,10 @@ from libnn.modules.module import Module
 
 
 class Linear(Module):
-    def __init__(self, in_features, out_features, add_bias=True):
+    def __init__(self, in_features, out_features):
         super().__init__()
         self.in_features = in_features
         self.out_features = out_features
-        self.add_bias = add_bias
 
         self.W = self.trainable(0.01 * np.random.randn(in_features, out_features))
         self.b = self.trainable(np.zeros(out_features))
