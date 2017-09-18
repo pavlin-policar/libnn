@@ -30,3 +30,15 @@ class Softmax(Activation):
 
         return jacobian
 
+
+class ReLU(Module):
+    def __init__(self):
+        super().__init__()
+        self.__X_cache = None
+
+    def forward(self, X):
+        self.__X_cache = X
+        return np.maximum(X, 0)
+
+    def backward(self, downstream_gradient):
+        return np.where(self.__X_cache > 0, downstream_gradient, 0)

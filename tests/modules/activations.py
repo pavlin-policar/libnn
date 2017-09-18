@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from libnn.modules.activations import Softmax
+from libnn.modules.activations import Softmax, ReLU
 from tests.modules.utils import numeric_gradient
 
 
@@ -37,5 +37,40 @@ class TestSoftmax(unittest.TestCase):
 
         np.testing.assert_almost_equal(
             numeric_gradient(self.softmax, downstream_gradient),
+            d_X
+        )
+
+
+class TestReLU(unittest.TestCase):
+    def setUp(self):
+        self.relu = ReLU()
+
+    def test_forward(self):
+        x = np.array([
+            [-2, 4, 1, 3, -1],
+            [3, -2, 2, -3, 1],
+        ], dtype=np.float64)
+        expected = np.array([
+            [0, 4, 1, 3, 0],
+            [3, 0, 2, 0, 1],
+        ], dtype=np.float64)
+
+        np.testing.assert_equal(self.relu(x), expected)
+
+    def test_backward(self):
+        x = np.array([
+            [-2, 4, 1, 3, -1],
+            [3, -2, 2, -3, 1],
+        ], dtype=np.float64)
+        downstream_gradient = np.array([
+            [5, -3, 1, 1, -3],
+            [1, 2, -2, -2, 1],
+        ], dtype=np.float64)
+        
+        self.relu(x)
+        d_X = self.relu.backward(downstream_gradient)
+
+        np.testing.assert_almost_equal(
+            numeric_gradient(self.relu, x, downstream_gradient),
             d_X
         )
