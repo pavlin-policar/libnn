@@ -10,7 +10,7 @@ class Linear(Module):
         self.out_features = out_features
 
         self.W = self.trainable(0.01 * np.random.randn(in_features, out_features))
-        self.b = self.trainable(np.zeros(out_features))
+        self.b = self.trainable(np.random.randn(out_features))
 
         self.__X_cache = None
 
