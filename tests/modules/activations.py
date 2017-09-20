@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from libnn.modules.activations import Softmax, ReLU
+from libnn.modules.activations import Softmax, ReLU, Sigmoid
 from tests.modules.utils import numeric_gradient
 
 
@@ -72,5 +72,28 @@ class TestReLU(unittest.TestCase):
 
         np.testing.assert_almost_equal(
             numeric_gradient(self.relu, x, downstream_gradient),
+            d_X
+        )
+
+
+class TestSigmoid(unittest.TestCase):
+    def setUp(self):
+        self.sigmoid = Sigmoid()
+
+    def test_forward(self):
+        x = np.array([0, 1, -1])
+        expected = np.array([.5, .731, .269])
+
+        np.testing.assert_almost_equal(self.sigmoid(x), expected, decimal=3)
+
+    def test_backward(self):
+        x = np.array([0, 1, -1])
+        downstream_gradient = np.ones_like(x) * 2
+
+        self.sigmoid(x)
+        d_X = self.sigmoid.backward(downstream_gradient)
+
+        np.testing.assert_almost_equal(
+            numeric_gradient(self.sigmoid, x, downstream_gradient),
             d_X
         )

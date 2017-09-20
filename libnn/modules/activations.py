@@ -3,15 +3,20 @@ import numpy as np
 from libnn.modules.module import Module
 
 
-class Activation:
-    def __call__(self, *args, **kwargs):
-        return self.forward(*args, **kwargs)
+class Sigmoid(Module):
+    def __init__(self):
+        super().__init__()
+        self.__z = None
 
     def forward(self, X):
-        ...
+        result = 1 / (1 + np.exp(-X))
+        self.__z = result
+        return result
 
-    def backward(self, x):
-        ...
+    def backward(self, downstream_gradient):
+        z = self.__z
+        return downstream_gradient * z * (1 - z)
+
 
 
 class Softmax(Activation):
