@@ -2,6 +2,8 @@ from functools import reduce
 
 import numpy as np
 
+from libnn.util import ForwardBackwardStorage
+
 
 class TrainableParameter(np.ndarray):
     def __new__(cls, data, **kwargs):
@@ -13,10 +15,10 @@ class TrainableParameter(np.ndarray):
         return self
 
 
-class Module:
+class Module(ForwardBackwardStorage):
     def __init__(self):
+        super().__init__()
         self._trainable_parameters = []
-
         self.training = True
 
     def trainable(self, *args, **kwargs):

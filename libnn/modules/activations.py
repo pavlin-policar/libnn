@@ -5,35 +5,25 @@ from libnn.modules.module import Module
 
 
 class Sigmoid(Module):
-    def __init__(self):
-        super().__init__()
-        self.__z = None
-
     def forward(self, X):
         result = 1 / (1 + np.exp(-X))
-        self.__z = result
+        self.save_for_backward(result)
         return result
 
     def backward(self, downstream_gradient):
-        z = self.__z
+        z, = self.saved_tensors
         return downstream_gradient * z * (1 - z)
 
 
 class Softmax(Module):
-    def __init__(self):
-        super().__init__()
-        self.__probabilities = None
-
     def forward(self, X):
         z = np.exp(X - np.max(X, axis=1, keepdims=True))
         probabilities = z / np.sum(z, axis=1, keepdims=True)
-        if self.training:
-            self.__probabilities = probabilities
+        self.save_for_backward(probabilities)
         return probabilities
 
     def backward(self, downstream_gradient):
-        probs = self.__probabilities
-
+        probs, = self.saved_tensors
         n_shape = probs.shape[1]
 
         jacobian = probs[..., :, np.newaxis] * (np.eye(n_shape) - probs[..., np.newaxis, :])
@@ -49,13 +39,10 @@ class Softmax(Module):
 
 
 class ReLU(Module):
-    def __init__(self):
-        super().__init__()
-        self.__X_cache = None
-
     def forward(self, X):
-        self.__X_cache = X
+        self.save_for_backward(X)
         return np.maximum(X, 0)
 
     def backward(self, downstream_gradient):
-        return np.where(self.__X_cache > 0, downstream_gradient, 0)
+        X, = self.saved_tensors
+        return np.where(X > 0, downstream_gradient, 0)
