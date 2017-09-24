@@ -3,7 +3,8 @@ from functools import partial
 
 import numpy as np
 
-from libnn.losses import MeanSquaredError, BinaryCrossEntropy
+from libnn.losses import MeanSquaredError, BinaryCrossEntropy, \
+    CategoricalCrossEntropy
 from tests.modules.utils import numeric_gradient
 
 
@@ -42,4 +43,41 @@ class TestBinaryCrossEntropy(unittest.TestCase):
         np.testing.assert_almost_equal(
             bce.gradient(),
             numeric_gradient(partial(bce, y=y), y_hat)
+        )
+
+
+class TestCategoricalCrossEntropy(unittest.TestCase):
+    def test_cost(self):
+        y_hat = np.array([
+            [.2, .2, .2, .2, .2],
+            [.2, .2, .2, .2, .2],
+        ], dtype=np.float64)
+        y = np.array([
+            [1, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0],
+        ], dtype=np.float64)
+
+        cce = CategoricalCrossEntropy()
+        # Assuming all predictions are equally likely, then the loss should
+        # equal to the log(n_classes)
+        self.assertAlmostEqual(cce(y_hat, y), np.log(5), delta=1e-4)
+
+    def test_gradient(self):
+        y_hat = np.array([
+            [.2, .2, .2, .2, .2],
+            [.1, .1, .1, .6, .1],
+            [.1, .1, .1, .1, .6],
+        ], dtype=np.float64)
+        y = np.array([
+            [1, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 1],
+        ], dtype=np.float64)
+
+        cce = CategoricalCrossEntropy()
+        cce(y_hat, y)
+
+        np.testing.assert_almost_equal(
+            cce.gradient(),
+            numeric_gradient(partial(cce, y=y), y_hat)
         )

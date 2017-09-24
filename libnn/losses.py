@@ -42,3 +42,16 @@ class BinaryCrossEntropy(Loss):
         y_hat, y = self.__y_hat, self.__y
         gradient = y / y_hat - (1 - y) / (1 - y_hat)
         return -gradient / y_hat.shape[0]
+
+
+class CategoricalCrossEntropy(Loss):
+    def __init__(self):
+        self.__y_hat = self.__y = None
+
+    def cost(self, y_hat, y):
+        self.__y_hat, self.__y = y_hat, y
+        return -np.mean(np.sum(y * np.log(y_hat), axis=1))
+
+    def gradient(self):
+        y_hat, y = self.__y_hat, self.__y
+        return - y / y_hat / y.shape[0]
