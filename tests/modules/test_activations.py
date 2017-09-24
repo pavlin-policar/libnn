@@ -27,16 +27,13 @@ class TestSoftmax(unittest.TestCase):
             [2, 5, 6, 4, 3],
             [3, 2, 3, 1, 1],
         ], dtype=np.float64)
-        downstream_gradient = np.array([
-            [1, 0, 0, 0, 0],
-            [.2, .3, .3, .1, .1],
-        ], dtype=np.float64)
+        downstream_gradient = np.ones_like(x)
 
+        self.softmax(x)
         d_X = self.softmax.backward(downstream_gradient)
-        print(d_X)
 
         np.testing.assert_almost_equal(
-            numeric_gradient(self.softmax, downstream_gradient),
+            numeric_gradient(self.softmax, x, downstream_gradient),
             d_X
         )
 
@@ -66,7 +63,7 @@ class TestReLU(unittest.TestCase):
             [5, -3, 1, 1, -3],
             [1, 2, -2, -2, 1],
         ], dtype=np.float64)
-        
+
         self.relu(x)
         d_X = self.relu.backward(downstream_gradient)
 
