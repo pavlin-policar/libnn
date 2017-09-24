@@ -50,7 +50,9 @@ class CategoricalCrossEntropy(Loss):
 
     def cost(self, y_hat, y):
         self.__y_hat, self.__y = y_hat, y
-        return -np.mean(np.sum(y * np.log(y_hat), axis=1))
+        # Because y contains a one-hot encoded representation of classes and
+        # can only contain 0 or 1, we can reduce computation overhead.
+        return -np.mean(np.log(y_hat)[y.astype(bool)])
 
     def gradient(self):
         y_hat, y = self.__y_hat, self.__y
