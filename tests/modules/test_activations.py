@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 
+from libnn.losses import CategoricalCrossEntropy
 from libnn.modules.activations import Softmax, ReLU, Sigmoid
 from tests.modules.utils import numeric_gradient
 
@@ -36,6 +37,30 @@ class TestSoftmax(unittest.TestCase):
             numeric_gradient(self.softmax, x, downstream_gradient),
             d_X
         )
+
+    def test_backward_with_simplified_cross_entropy_loss_gradient(self):
+        """Compare the chained gradient with the known simplified gradient
+        using cross-entropy loss."""
+        x = np.array([
+            [2, 5, 6, 4, 3],
+            [3, 2, 3, 1, 1],
+        ], dtype=np.float64)
+        y = np.array([2, 4])
+
+        y_hat = self.softmax(x)
+        cce = CategoricalCrossEntropy()
+        cce(y_hat, y)
+
+        # Compute the softmax gradient wrt to loss using chained layers
+        chained_gradient = self.softmax.backward(cce.gradient())
+
+        # The gradient of the softmax simplifies greatly when using the
+        # categorical cross entropy loss
+        combined_gradient = y_hat
+        combined_gradient[range(y.shape[0]), y] -= 1
+        combined_gradient /= x.shape[0]
+
+        np.testing.assert_almost_equal(chained_gradient, combined_gradient)
 
 
 class TestReLU(unittest.TestCase):
