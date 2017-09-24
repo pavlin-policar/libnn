@@ -77,7 +77,7 @@ def _decision_boundary(xx, yy, predictions):
         y coordinates
     predictions : np.ndarray
         The predicted class label.
-        
+
     """
     predictions = predictions.reshape(xx.shape)
     plt.contourf(xx, yy, predictions, cmap=plt.cm.Paired)
