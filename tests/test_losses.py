@@ -52,10 +52,7 @@ class TestCategoricalCrossEntropy(unittest.TestCase):
             [.2, .2, .2, .2, .2],
             [.2, .2, .2, .2, .2],
         ], dtype=np.float64)
-        y = np.array([
-            [1, 0, 0, 0, 0],
-            [0, 0, 0, 1, 0],
-        ], dtype=np.float64)
+        y = np.array([0, 3], dtype=np.float64)
 
         cce = CategoricalCrossEntropy()
         # Assuming all predictions are equally likely, then the loss should
@@ -68,11 +65,7 @@ class TestCategoricalCrossEntropy(unittest.TestCase):
             [.1, .1, .1, .6, .1],
             [.1, .1, .1, .1, .6],
         ], dtype=np.float64)
-        y = np.array([
-            [1, 0, 0, 0, 0],
-            [0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 1],
-        ], dtype=np.float64)
+        y = np.array([0, 3, 4], dtype=np.float64)
 
         cce = CategoricalCrossEntropy()
         cce(y_hat, y)
