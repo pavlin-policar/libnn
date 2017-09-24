@@ -1,8 +1,9 @@
 import numpy as np
 
 from libnn.losses import MeanSquaredError
-from libnn.modules.layers import Linear
 from libnn.modules.activations import ReLU
+from libnn.modules.layers import Linear
+from libnn.modules.module import Sequential
 
 np.random.seed(42)
 
@@ -14,17 +15,19 @@ x = np.array([
 ])
 y = np.array([1, 2, 3])
 
-linear1 = Linear(5, 3)
-relu = ReLU()
-linear2 = Linear(3, 1)
 loss = MeanSquaredError()
 
+model = Sequential(
+    Linear(5, 30),
+    ReLU(),
+    Linear(30, 1),
+)
+
+
 learning_rate = 0.01
-for epoch in range(50):
+for epoch in range(500):
     # Perform the forward pass
-    z = linear1(x)
-    z = relu(z)
-    z = linear2(z)
+    z = model(x)
 
     # Compute the error
     error = loss(z.flatten(), y)
@@ -32,13 +35,8 @@ for epoch in range(50):
 
     # Backpropagate the gradient
     gradient = loss.gradient()[:, np.newaxis]
-    gradient = linear2.backward(gradient)
-    gradient = relu.backward(gradient)
-    gradient = linear1.backward(gradient)
+    gradient = model.backward(gradient)
 
     # Update the weights
-    linear1.W -= learning_rate * linear1.W.grad
-    linear1.b -= learning_rate * linear1.b.grad
-
-    linear2.W -= learning_rate * linear2.W.grad
-    linear2.b -= learning_rate * linear2.b.grad
+    for parameter in model.trainable_parameters():
+        parameter -= learning_rate * parameter.grad
