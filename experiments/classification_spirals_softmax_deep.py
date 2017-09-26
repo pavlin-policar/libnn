@@ -9,7 +9,7 @@ X, y = datasets.spirals(300)
 
 
 hidden_layer_size = 10
-initialization = 'xavier'
+initialization = 'xavier_relu'
 
 
 loss = CategoricalCrossEntropy()
