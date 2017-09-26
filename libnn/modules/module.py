@@ -1,3 +1,4 @@
+from abc import ABCMeta, abstractmethod
 from functools import reduce
 
 import numpy as np
@@ -15,7 +16,7 @@ class TrainableParameter(np.ndarray):
         return self
 
 
-class Module(ForwardBackwardStorage):
+class Module(ForwardBackwardStorage, metaclass=ABCMeta):
     def __init__(self):
         super().__init__()
         self._trainable_parameters = []
@@ -26,11 +27,13 @@ class Module(ForwardBackwardStorage):
         self._trainable_parameters.append(param)
         return param
 
+    @abstractmethod
     def forward(self, X):
-        raise NotImplementedError()
+        pass
 
+    @abstractmethod
     def backward(self, downstream_gradient):
-        raise NotImplementedError()
+        pass
 
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
