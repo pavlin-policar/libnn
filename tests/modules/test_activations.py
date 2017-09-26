@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from libnn.losses import CategoricalCrossEntropy
-from libnn.modules.activations import Softmax, ReLU, Sigmoid
+from libnn.modules.activations import Softmax, ReLU, Sigmoid, Tanh
 from tests.modules.utils import numeric_gradient
 
 
@@ -117,5 +117,28 @@ class TestSigmoid(unittest.TestCase):
 
         np.testing.assert_almost_equal(
             numeric_gradient(self.sigmoid, x, downstream_gradient),
+            d_X
+        )
+
+
+class TestTanh(unittest.TestCase):
+    def setUp(self):
+        self.tanh = Tanh()
+
+    def test_forward(self):
+        x = np.array([0, 1, -1])
+        expected = np.array([0., .762, -.762])
+
+        np.testing.assert_almost_equal(self.tanh(x), expected, decimal=3)
+
+    def test_backward(self):
+        x = np.array([0, 1, -1])
+        downstream_gradient = np.ones_like(x) * 2
+
+        self.tanh(x)
+        d_X = self.tanh.backward(downstream_gradient)
+
+        np.testing.assert_almost_equal(
+            numeric_gradient(self.tanh, x, downstream_gradient),
             d_X
         )

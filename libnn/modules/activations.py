@@ -15,6 +15,18 @@ class Sigmoid(Module):
         return downstream_gradient * z * (1 - z)
 
 
+class Tanh(Module):
+    def forward(self, X):
+        result = np.tanh(X)
+        self.save_for_backward(result)
+        return result
+
+    def backward(self, downstream_gradient):
+        result, = self.saved_tensors
+        local_gradient = 1 - result ** 2
+        return downstream_gradient * local_gradient
+
+
 class Softmax(Module):
     def forward(self, X):
         z = np.exp(X - np.max(X, axis=1, keepdims=True))
