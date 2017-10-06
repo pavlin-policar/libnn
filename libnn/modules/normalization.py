@@ -34,8 +34,8 @@ class BatchNormalization(Module):
                 '`%s` is not a recognized initialization scheme' % beta_init
             )
 
-        self.gamma = self.trainable(gamma_initialization(1, in_shape))
-        self.beta = self.trainable(beta_initialization(1, in_shape))
+        self.gamma = self.trainable(gamma_initialization(in_shape))
+        self.beta = self.trainable(beta_initialization(in_shape))
         self.epsilon = epsilon
 
     def forward(self, X):

@@ -22,7 +22,7 @@ class Linear(Module):
         # For some initialization (e.g. xavier) to work properly, we must
         # initialize the weights at the same time. We add 1 to the
         # `in_features` to add to the bias term
-        weights = initialization(in_features + 1, out_features)
+        weights = initialization((in_features + 1, out_features))
         self.W = self.trainable(weights[:-1])
         self.b = self.trainable(weights[-1])
 
