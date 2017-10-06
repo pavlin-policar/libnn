@@ -3,7 +3,8 @@ import unittest
 import numpy as np
 
 from libnn.losses import CategoricalCrossEntropy
-from libnn.modules.activations import Softmax, ReLU, Sigmoid, Tanh, LeakyReLU
+from libnn.modules.activations import Softmax, ReLU, Sigmoid, Tanh, LeakyReLU, \
+    PReLU
 from tests.modules.utils import numeric_gradient
 
 
@@ -172,4 +173,53 @@ class TestLeakyReLU(unittest.TestCase):
         np.testing.assert_almost_equal(
             d_X,
             numeric_gradient(self.leaky_relu, self.x, downstream_gradient)
+        )
+
+
+class TestPReLU(unittest.TestCase):
+    def setUp(self):
+        self.prelu = PReLU(alpha_init=lambda shape: 2 * np.ones(shape))
+        self.x = np.array([
+            [-2, 4, 1, 3, -1],
+            [3, -2, 2, -3, 1],
+        ], dtype=np.float64)
+
+    def test_forward(self):
+        expected = np.array([
+            [-4, 4, 1, 3, -2],
+            [3, -4, 2, -6, 1],
+        ], dtype=np.float64)
+
+        np.testing.assert_almost_equal(self.prelu(self.x), expected)
+
+    def test_backward(self):
+        downstream_gradient = np.array([
+            [5, -3, 1, 1, -3],
+            [1, 2, -2, -2, 1],
+        ], dtype=np.float64)
+
+        self.prelu(self.x)
+        d_X = self.prelu.backward(downstream_gradient)
+
+        np.testing.assert_almost_equal(
+            d_X,
+            numeric_gradient(self.prelu, self.x, downstream_gradient),
+            decimal=5
+        )
+
+    def test_backward_wrt_alpha(self):
+        downstream_gradient = np.array([
+            [5, -3, 1, 1, -3],
+            [1, 2, -2, -2, 1],
+        ], dtype=np.float64)
+        self.prelu(self.x)
+        self.prelu.backward(downstream_gradient)
+
+        def _forward_wrt_alpha(new_alpha):
+            self.prelu.alpha[:] = new_alpha
+            return self.prelu(self.x)
+
+        np.testing.assert_almost_equal(
+            self.prelu.alpha.grad,
+            numeric_gradient(_forward_wrt_alpha, self.prelu.alpha)
         )

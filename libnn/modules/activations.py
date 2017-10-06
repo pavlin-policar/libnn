@@ -1,6 +1,7 @@
 import numpy as np
 from numpy.core.umath_tests import matrix_multiply
 
+from libnn.modules import initializations
 from libnn.modules.module import Module
 
 
@@ -76,4 +77,35 @@ class LeakyReLU(Module):
             downstream_gradient,
             self.alpha * downstream_gradient
         )
+
+
+class PReLU(Module):
+    def __init__(self, alpha_init='zeros'):
+        super().__init__()
+
+        if callable(alpha_init):
+            initialization = alpha_init
+        elif hasattr(initializations, alpha_init):
+            initialization = getattr(initializations, alpha_init)
+        else:
+            raise ValueError(
+                '`%s` is not a recognized initialization scheme' % alpha_init
+            )
+
+        self.alpha = self.trainable(initialization(1))
+
+    def forward(self, X):
+        self.save_for_backward(X)
+        return np.where(X < 0, self.alpha * X, X)
+
+    def backward(self, downstream_gradient):
+        X, = self.saved_tensors
+
+        d_alpha = X.copy()
+        d_alpha[d_alpha <= 0] = 0
+        d_alpha *= downstream_gradient
+        self.alpha.grad = np.sum(d_alpha)
+
+        return np.where(X > 0, downstream_gradient, self.alpha * downstream_gradient)
+
 
