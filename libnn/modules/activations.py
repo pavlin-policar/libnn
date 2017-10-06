@@ -58,3 +58,22 @@ class ReLU(Module):
     def backward(self, downstream_gradient):
         X, = self.saved_tensors
         return np.where(X > 0, downstream_gradient, 0)
+
+
+class LeakyReLU(Module):
+    def __init__(self, alpha=0.01):
+        super().__init__()
+        self.alpha = alpha
+
+    def forward(self, X):
+        self.save_for_backward(X)
+        return np.maximum(X, self.alpha * X)
+
+    def backward(self, downstream_gradient):
+        X, = self.saved_tensors
+        return np.where(
+            X > 0,
+            downstream_gradient,
+            self.alpha * downstream_gradient
+        )
+

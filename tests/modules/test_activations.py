@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from libnn.losses import CategoricalCrossEntropy
-from libnn.modules.activations import Softmax, ReLU, Sigmoid, Tanh
+from libnn.modules.activations import Softmax, ReLU, Sigmoid, Tanh, LeakyReLU
 from tests.modules.utils import numeric_gradient
 
 
@@ -141,4 +141,35 @@ class TestTanh(unittest.TestCase):
         np.testing.assert_almost_equal(
             numeric_gradient(self.tanh, x, downstream_gradient),
             d_X
+        )
+
+
+class TestLeakyReLU(unittest.TestCase):
+    def setUp(self):
+        self.leaky_relu = LeakyReLU(alpha=0.1)
+        self.x = np.array([
+            [-2, 4, 1, 3, -1],
+            [3, -2, 2, -3, 1],
+        ], dtype=np.float64)
+
+    def test_forward(self):
+        expected = np.array([
+            [-0.2, 4, 1, 3, -0.1],
+            [3, -0.2, 2, -0.3, 1],
+        ], dtype=np.float64)
+
+        np.testing.assert_almost_equal(self.leaky_relu(self.x), expected)
+
+    def test_backward(self):
+        downstream_gradient = np.array([
+            [5, -3, 1, 1, -3],
+            [1, 2, -2, -2, 1],
+        ], dtype=np.float64)
+
+        self.leaky_relu(self.x)
+        d_X = self.leaky_relu.backward(downstream_gradient)
+
+        np.testing.assert_almost_equal(
+            d_X,
+            numeric_gradient(self.leaky_relu, self.x, downstream_gradient)
         )
