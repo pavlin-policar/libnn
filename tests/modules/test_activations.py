@@ -4,7 +4,7 @@ import numpy as np
 
 from libnn.losses import CategoricalCrossEntropy
 from libnn.modules.activations import Softmax, ReLU, Sigmoid, Tanh, LeakyReLU, \
-    PReLU, ELU
+    PReLU, ELU, SELU
 from tests.modules.utils import numeric_gradient
 
 
@@ -257,5 +257,41 @@ class TestELU(unittest.TestCase):
         np.testing.assert_almost_equal(
             d_X,
             numeric_gradient(self.elu, self.x, downstream_gradient),
+            decimal=5
+        )
+
+
+class TestSELU(unittest.TestCase):
+    def setUp(self):
+        self.selu = SELU()
+        self.x = np.array([
+            [-2, 4, 1, 3, -1],
+            [3, -2, 2, -3, 1],
+        ], dtype=np.float64)
+
+    def test_forward(self):
+        x_mask = self.x > 0
+
+        np.testing.assert_almost_equal(
+            self.selu(self.x)[x_mask],
+            self.selu.scale * self.x[x_mask]
+        )
+        self.assertFalse(np.any(np.equal(
+            self.selu(self.x)[~x_mask],
+            self.x[~x_mask]
+        )))
+
+    def test_backward(self):
+        downstream_gradient = np.array([
+            [5, -3, 1, 1, -3],
+            [1, 2, -2, -2, 1],
+        ], dtype=np.float64)
+
+        self.selu(self.x)
+        d_X = self.selu.backward(downstream_gradient)
+
+        np.testing.assert_almost_equal(
+            d_X,
+            numeric_gradient(self.selu, self.x, downstream_gradient),
             decimal=5
         )

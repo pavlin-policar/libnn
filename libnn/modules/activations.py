@@ -128,3 +128,19 @@ class ELU(Module):
             (result + self.alpha) * downstream_gradient
         )
 
+
+class SELU(Module):
+    alpha = 1.6732632423543772848170429916717
+    scale = 1.0507009873554804934193349852946
+
+    def forward(self, X):
+        self.save_for_backward(X)
+        return self.scale * np.where(X > 0, X, self.alpha * np.exp(X) - self.alpha)
+
+    def backward(self, downstream_gradient):
+        X, = self.saved_tensors
+        return np.where(
+            X > 0,
+            self.scale * downstream_gradient,
+            self.scale * self.alpha * np.exp(X) * downstream_gradient
+        )
