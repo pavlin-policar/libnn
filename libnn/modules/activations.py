@@ -112,11 +112,11 @@ class PReLU(Module):
 class ELU(Module):
     def __init__(self, alpha=1.0):
         super().__init__()
-        self.alpha = self.trainable(np.array([alpha]))
+        self.alpha = alpha
 
     def forward(self, X):
         X_mask = X > 0
-        result = np.where(X_mask, X, self.alpha * np.exp(X) - 1)
+        result = np.where(X_mask, X, self.alpha * np.exp(X) - self.alpha)
         self.save_for_backward(result, X_mask)
         return result
 
