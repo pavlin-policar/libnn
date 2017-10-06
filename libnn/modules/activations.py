@@ -109,3 +109,22 @@ class PReLU(Module):
         return np.where(X > 0, downstream_gradient, self.alpha * downstream_gradient)
 
 
+class ELU(Module):
+    def __init__(self, alpha=1.0):
+        super().__init__()
+        self.alpha = self.trainable(np.array([alpha]))
+
+    def forward(self, X):
+        X_mask = X > 0
+        result = np.where(X_mask, X, self.alpha * np.exp(X) - 1)
+        self.save_for_backward(result, X_mask)
+        return result
+
+    def backward(self, downstream_gradient):
+        result, X_mask = self.saved_tensors
+        return np.where(
+            X_mask,
+            downstream_gradient,
+            (result + self.alpha) * downstream_gradient
+        )
+
