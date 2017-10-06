@@ -67,7 +67,9 @@ class LeakyReLU(Module):
 
     def forward(self, X):
         self.save_for_backward(X)
-        return np.maximum(X, self.alpha * X)
+        out = X.copy()
+        np.putmask(out, X < 0, self.alpha * X)
+        return out
 
     def backward(self, downstream_gradient):
         X, = self.saved_tensors
