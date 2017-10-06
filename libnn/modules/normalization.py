@@ -9,8 +9,8 @@ class BatchNormalization(Module):
         self,
         in_shape,
         epsilon=1e-6,
-        gamma_init='random_normal',
-        beta_init='random_normal'
+        gamma_init='ones',
+        beta_init='zeros'
     ):
         super().__init__()
 
