@@ -21,3 +21,23 @@ def ones(shape):
 
 def zeros(shape):
     return np.zeros(shape)
+
+
+def he_normal(shape):
+    """Initialization scheme for rectified linear units.
+
+    Parameters
+    ----------
+    shape : Tuple
+
+    Returns
+    -------
+    np.ndarray
+
+    References
+    ----------
+    He et al., http://arxiv.org/abs/1502.01852
+
+    """
+    in_shape, out_shape = shape
+    return np.random.normal(0., np.sqrt(2 / in_shape), shape)
