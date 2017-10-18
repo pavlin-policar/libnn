@@ -146,3 +146,24 @@ class SELU(Module):
             self.scale * downstream_gradient,
             self.scale * (result + self.alpha) * downstream_gradient
         )
+
+
+class Swish(Module):
+    """
+    # TODO: Add tests
+
+    References
+    ----------
+    https://arxiv.org/pdf/1710.05941.pdf
+
+    """
+    def forward(self, X):
+        sigmoid = 1 / (1 + np.exp(-X))
+        result = X * sigmoid
+        self.save_for_backward(sigmoid, result)
+        return result
+
+    def backward(self, downstream_gradient):
+        sigmoid, result = self.saved_tensors
+        local_gradient = result + sigmoid * (1 - result)
+        return downstream_gradient * local_gradient
